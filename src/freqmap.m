@@ -13,9 +13,9 @@ function f = freqmap(varargin)
 % 
 % freqmap(key, nnote, flag)
 % 输入:
-% <int> flag: -1表示降调(?), 1表示升调(?)
+% <int> flag: -1表示降调(b), 1表示升调(#)
 %
-% e.g. 求 ?D调 LA(6)音 的频率
+% e.g. 求 bD调 LA(6)音 的频率
 % freqmap('D',6,-1)
 %           = 466.16
 
