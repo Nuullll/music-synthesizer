@@ -40,7 +40,7 @@ elseif flag == 1
 end
 
 if nnote < 1 || nnote > 7
-    f = 2^floor((nnote-1)/7)*freqmap(key,mod(nnote,7),flag);
+    f = 2^floor((nnote-1)/7)*freqmap(key,mod(nnote-1,7)+1,flag);
     return
 end
 
