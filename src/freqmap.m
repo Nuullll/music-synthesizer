@@ -52,6 +52,7 @@ if nnote <= 3       % Do Re Mi
     f = f1*2^(2*(nnote-1)/12);
 else                % Fa So La Si
     f = f1*2^((2*(nnote-1)-1)/12);
+end
 
 end
 
