@@ -137,7 +137,7 @@ song = [5, 1;       % 将一段乐谱表示为一个n-by-2矩阵
     wav = [];       % intialize wav
     for i = 1:size(song,1)
         t = 0:1/fs:(tpb*song(i,2));     % time sequence
-        if song(i,1) == '-'
+        if song(i,1) == -inf
             wav = [wav, zeros(1,length(t))];
         else
             wav = [wav, sin(2*pi*freqmap(key,song(i,1),flag)*t)];
@@ -177,4 +177,4 @@ song = [5, 1;       % 将一段乐谱表示为一个n-by-2矩阵
 
 # 参考文献
 
-[1] ![Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015.7.23
+[1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015.7.23
