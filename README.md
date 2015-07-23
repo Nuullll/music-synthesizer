@@ -156,3 +156,25 @@ song = [5, 1;       % 将一段乐谱表示为一个n-by-2矩阵
     ```
 
     如上, 即可用单频信号合成音乐, 可以调节节奏快慢, 基调
+
+    **注: 将`soundsong.m`中的`sin`函数换成`sawtooth`, `square`等函数会听到不同音色的音乐**
+
+
+## ADSR包络控制<sup>[1]</sup>
+
+![ADSR](pic/ADSR.png)
+
+- 起音(Attack): 控制最初从零振幅到最大振幅的时间
+
+- 衰减(Decay): 控制从最大振幅降到延音电平的时间
+
+- 延音(Sustain): 设定按住某个键时生成的稳定振幅电平(延音电平)
+
+- 释音(Release): 控制键释放后, 从延音电平降至零振幅的时间
+
+*注: 如果在起音或衰减阶段释放键，则通常会跳过延音阶段。延音电平为零会产生类似钢琴声或打击乐的包络，没有持续稳定的电平，即使按住键时也如此。*
+
+
+# 参考文献
+
+[1] ![Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015.7.23
