@@ -191,38 +191,29 @@ function wav = adsr(attack,decay,sustain,release,wavin,t)
 %   <row vector> wav: 包络调制后的波形
 
 N = length(t);
-ta = t(1:attack*N);     % time sequence for Attack
-td = t(attack*N+1:(attack+decay)*N);    % time sequence for Decay
-% ts = t((attack+decay)*N+1:(1-release)*N);   % time sequence for Sustain
-tr = t((1-release)*N+1:end);    % time sequence for Release
+ta = t(1:floor(attack*N));     % time sequence for Attack
+td = t(floor(attack*N)+1:floor((attack+decay)*N));    % time sequence for Decay
+tr = t(floor((1-release)*N)+1:end);    % time sequence for Release
 
-wa = wavin(1:attack*N);
-wd = wavin(attack*N+1:(attack+decay)*N);
-ws = wavin((attack+decay)*N+1:(1-release)*N);
-wr = wavin((1-release)*N+1:end);
+wa = wavin(1:floor(attack*N));
+wd = wavin(floor(attack*N)+1:floor((attack+decay)*N));
+ws = wavin(floor((attack+decay)*N)+1:floor((1-release)*N));
+wr = wavin(floor((1-release)*N)+1:end);
 
-ea = (ta/ta(end));    % envelope for Attack
-ed = (1-(td-td(1))/(td(end)-td(1))*(1-sustain));  % envelope for Decay
-es = (sustain);            % envelope for Sustain
-er = (sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain);    % envelope for Release
+ea = ta/ta(end);    % envelope for Attack
+ed = 1-(td-td(1))/(td(end)-td(1))*(1-sustain);  % envelope for Decay
+es = sustain;            % envelope for Sustain
+er = sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain;    % envelope for Release
 
 wav = [ea.*wa, ed.*wd, es.*ws, er.*wr];
 
-wav = exp(-t(1:length(wav))).*wav;
+wav = exp(-t).*wav;
 
 end
-``` 
+```
 
 即将输入音乐分段调制后再输出, 包络形状由ADSR四个参数控制, 
 
-```matlab
-attack = 0.1;
-decay = 0.7;
-sustain = 0;
-release = 0.2;
-```
-
-当参数如上所示时, 合成的音乐音色与钢琴相近.
 
 
 
