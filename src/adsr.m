@@ -14,7 +14,7 @@ function wav = adsr(attack,decay,sustain,release,wavin,t)
 N = length(t);
 ta = t(1:attack*N);     % time sequence for Attack
 td = t(attack*N+1:(attack+decay)*N);    % time sequence for Decay
-ts = t((attack+decay)*N+1:(1-release)*N);   % time sequence for Sustain
+% ts = t((attack+decay)*N+1:(1-release)*N);   % time sequence for Sustain
 tr = t((1-release)*N+1:end);    % time sequence for Release
 
 wa = wavin(1:attack*N);

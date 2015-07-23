@@ -174,6 +174,55 @@ song = [5, 1;       % 将一段乐谱表示为一个n-by-2矩阵
 
 *注: 如果在起音或衰减阶段释放键，则通常会跳过延音阶段。延音电平为零会产生类似钢琴声或打击乐的包络，没有持续稳定的电平，即使按住键时也如此。*
 
+**根据人耳特性, 采用指数衰减的包络进行调制**
+
+```matlab
+function wav = adsr(attack,decay,sustain,release,wavin,t)
+%wav = adsr(attack,decay,sustain,release,generator,t)
+% 输入:
+%   <float> attack: 冲激时间所占比例
+%   <float> decay: 衰减时间所占比例
+%   <float> sustain: 延音电平归一化振幅(最大振幅为1)
+%   <float> release: 释放时间所占比例
+%   <string> generator: 'sin', 'sawtooth', 'square'
+%   <row vector> t: 时间序列
+%   <float> f: 频率
+% 返回值:
+%   <row vector> wav: 包络调制后的波形
+
+N = length(t);
+ta = t(1:attack*N);     % time sequence for Attack
+td = t(attack*N+1:(attack+decay)*N);    % time sequence for Decay
+ts = t((attack+decay)*N+1:(1-release)*N);   % time sequence for Sustain
+tr = t((1-release)*N+1:end);    % time sequence for Release
+
+wa = wavin(1:attack*N);
+wd = wavin(attack*N+1:(attack+decay)*N);
+ws = wavin((attack+decay)*N+1:(1-release)*N);
+wr = wavin((1-release)*N+1:end);
+
+ea = exp(ta/ta(end))/exp(1);    % envelope for Attack
+ed = exp(1-(td-td(1))/(td(end)-td(1))*(1-sustain))/exp(1);  % envelope for Decay
+es = exp(sustain)/exp(1);            % envelope for Sustain
+er = exp(sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain)/exp(1);    % envelope for Release
+
+wav = [ea.*wa, ed.*wd, es.*ws, er.*wr];
+
+end
+```
+
+即将输入音乐分段调制后再输出, 包络形状由ADSR四个参数控制, 
+
+```matlab
+attack = 0.1;
+decay = 0.7;
+sustain = 0;
+release = 0.2;
+```
+
+当参数如上所示时, 合成的音乐音色与钢琴相近.
+
+
 
 # 参考文献
 
