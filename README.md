@@ -33,7 +33,7 @@ Homework No.1 for summer course: MATLAB
 - 创建`src/freqmap.m`函数实现计算给定调给定音频率的功能
 
     ```matlab
-    help freqmap
+    >> help freqmap
       freqmap(key, nnote)
       输入:
       <string> key: 调名
@@ -56,7 +56,7 @@ Homework No.1 for summer course: MATLAB
     ```
 
     ```matlab
-    freqmap('F',1)  % 求F调Do的频率
+    >> freqmap('F',1)  % 求F调Do的频率
 
     ans =
 
@@ -116,3 +116,43 @@ song = [5, 1;       % 将一段乐谱表示为一个n-by-2矩阵
         2, 2];
 ```
 
+- 给定了简谱的数据结构, 构建`src/soundsong.m`进行**初级音乐合成**
+
+    ```matlab
+    % src/soundsong.m
+
+    function wav = soundsong(BPM,key,flag,song,fs)
+    % soundsong(BPM,key,song,fs)
+    % 输入:
+    %   <float> BPM: beats per minute
+    %   <char> key: 歌曲的调
+    %   <int> flag: -1表示降半个音阶(♭), 1表示升半个音阶(♯)
+    %   <n-by-2 matrix> song: 乐谱, 第一列为音符唱名, 第二列为各音符持续拍数
+    %       休止符用字符'-'表示
+    %   <float> fs: 采样频率
+    % 返回值:
+    %   <row vector> wav: 合成的歌曲
+
+    tpb = 60/BPM;   % time per beat (seconds)
+    wav = [];       % intialize wav
+    for i = 1:size(song,1)
+        t = 0:1/fs:(tpb*song(i,2));     % time sequence
+        if song(i,1) == '-'
+            wav = [wav, zeros(1,length(t))];
+        else
+            wav = [wav, sin(2*pi*freqmap(key,song(i,1),flag)*t)];
+        end
+    end
+
+    sound(wav,fs);
+
+    end
+    ```
+
+    ```matlab
+    >> soundsong(140,'F',0,song,fs);
+    >> soundsong(120,'F',0,song,fs);
+    >> soundsong(120,'C',0,song,fs);
+    ```
+
+    如上, 即可用单频信号合成音乐, 可以调节节奏快慢, 基调

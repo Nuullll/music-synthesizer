@@ -46,7 +46,7 @@ end
 
 mainf = 2.^((0:11)/12)*220;     % [A,bB,B,C,bD,D,bE,E,F,bG,G,bA]
 map = containers.Map({'A','B','C','D','E','F','G'},{1,3,4,6,8,9,11});
-f1 = mainf(map(key)+flag);      % frequency of note Do
+f1 = mainf(map(char(key))+flag);      % frequency of note Do
 
 if nnote <= 3       % Do Re Mi
     f = f1*2^(2*(nnote-1)/12);
