@@ -14,12 +14,19 @@ function wav = soundsong(BPM,key,flag,song,fs)
 
 tpb = 60/BPM;   % time per beat (seconds)
 wav = [];       % intialize wav
+
+attack = 0.1;
+decay = 0.7;
+sustain = 0;
+release = 0.2;
+
 for i = 1:size(song,1)
     t = 0:1/fs:(tpb*song(i,2));     % time sequence
     if song(i,1) == -inf
         wav = [wav, zeros(1,length(t))];
     else
-        wav = [wav, sin(2*pi*freqmap(key,song(i,1),flag)*t)];
+        wav = [wav, adsr(attack,decay,sustain,release,...
+            sin(2*pi*freqmap(key,song(i,1),flag)*t),t)];
     end
 end
 
