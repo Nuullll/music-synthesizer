@@ -63,4 +63,4 @@ Homework No.1 for summer course: MATLAB
       349.2282
     ```
 
-    - *注: 输入参数nnote=0表示低音7, 而非休止符, 输入参数nnote=8表示高音8, 以此类推*
+    - *注: 输入参数nnote=0表示低音7, 而非休止符, 输入参数nnote=8表示高音1, 以此类推*
