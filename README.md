@@ -58,9 +58,9 @@ Homework No.1 for summer course: MATLAB
     ```matlab
     freqmap('F',1)  % 求F调Do的频率
 
-    ans =
+      ans =
 
-      349.2282
+        349.2282
     ```
 
     - *注: 输入参数nnote=0表示低音7, 而非休止符, 输入参数nnote=8表示高音1, 以此类推*
