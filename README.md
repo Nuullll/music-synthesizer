@@ -211,7 +211,7 @@ wav = [ea.*wa, ed.*wd, es.*ws, er.*wr];
 wav = exp(-t(1:length(wav))).*wav;
 
 end
-```
+``` 
 
 即将输入音乐分段调制后再输出, 包络形状由ADSR四个参数控制, 
 
