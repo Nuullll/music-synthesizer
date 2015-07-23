@@ -28,3 +28,38 @@ Homework No.1 for summer course: MATLAB
 
 对应时要注意3和4, 7和高音1之间是**半音**关系, 即频率比例为2<sup>1/12</sup>, 其余相邻音之间为全音关系, 即频率比例为2<sup>2/12</sup>
 
+另外注意到高音1的频率是1频率的两倍, 即高了一个八度.
+
+- 创建`src/freqmap.m`函数实现计算给定调给定音频率的功能
+
+    ```matlab
+    help freqmap
+      freqmap(key, nnote)
+      输入:
+      <string> key: 调名
+      <int> nnote: 数字简谱
+      返回值:
+      <float> f: 该音在给定调下的频率
+     
+      e.g. 求 F大调 So(5)音 的频率
+      freqmap('F',5)
+                = 523.2511
+     
+      
+      freqmap(key, nnote, flag)
+      输入:
+      <int> flag: -1表示降调(b), 1表示升调(#)
+     
+      e.g. 求 bD调 La(6)音 的频率
+      freqmap('D',6,-1)
+                = 466.1638
+    ```
+
+    ```matlab
+    freqmap('F',1)  % 求F调Do的频率
+
+    ans =
+
+      349.2282
+    ```
+
