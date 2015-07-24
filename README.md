@@ -466,6 +466,12 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
 
     **基频为329.2Hz, 结果与上一种方法相同, 频谱更接近冲激函数**
 
+- 引用谷源涛老师*信号与系统*的讲义<sup>[3]</sup>, 当脉冲数增多直至趋于无穷, 即成为周期信号, **频谱由连续谱退化为离散谱**, 由分立的冲激函数构成
+
+    ![解释1](pic/F-multi-pulses.png)
+    ![解释2](pic/F-periodical.png)
+    
+
 # 参考文献
 
 [1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015/7/23
