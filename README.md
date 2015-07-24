@@ -330,6 +330,42 @@ end
         ![升半个音阶](pic/sharp-ChinaRed.png)
 
 
+## 谐波(Harmonics)
+
+直接修改`soundsong`函数, 增加`harmonics`接口
+
+```matlab
+%   <1-by-m matrix> harmonics: 各阶谐波分量幅度, harmonics(1)为基波幅度
+
+harmonics*sin(2*pi*f*(1:length(harmonics)).'*t);  % add harmonics
+```
+
+用上述代码替换原来的单频信号即可
+
+- 模仿吉他音
+
+    根据参考资料<sup>[2]</sup>的吉他频谱: 
+
+    ![吉他频谱](pic/guitar-spectrum.jpg)
+
+    利用以下参数, 
+
+    ```matlab
+    %% test
+    a = 0.0001;
+    d = 0.0001;
+    s = 0.8;
+    r = 0.99;
+    harmonics = [1 0.35 0.23 0.12 0.04 0.08 0.08 0.08 0.12];
+    wav = soundsong(140,'F',0,[1 4],fs,[a,d,s,r],harmonics);
+    ```
+
+    听起来有点像吉他! *吉他音的谐波分布与弹奏方式有较大关系*, 如`harmonics = [0.55 0.95 0.65 0.3 0.1]`也可以产生类似吉他音的效果, 这种情况下, `ADSR`包络参数对音色影响也较大.
+
+
+
 # 参考文献
 
-[1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015.7.23
+[1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015/7/23
+
+[2] [Computer Music_ Guitar Spectrum](http://computermusicresource.com/guitar.spectrum.html), viewed on 2015/7/24
