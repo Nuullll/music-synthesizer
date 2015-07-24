@@ -470,10 +470,12 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
 
     ![解释1](pic/F-multi-pulses.png)
     ![解释2](pic/F-periodical.png)
-    
+
 
 # 参考文献
 
 [1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015/7/23
 
 [2] [Computer Music_ Guitar Spectrum](http://computermusicresource.com/guitar.spectrum.html), viewed on 2015/7/24
+
+[3] 谷源涛, *2015春信号与系统09第八讲3.9-3.12(18)*, 2015
