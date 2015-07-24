@@ -200,15 +200,21 @@ wd = wavin(floor(attack*N)+1:floor((attack+decay)*N));
 ws = wavin(floor((attack+decay)*N)+1:floor((1-release)*N));
 wr = wavin(floor((1-release)*N)+1:end);
 
-ea = exp(ta/ta(end))/exp(1);    % envelope for Attack
-ed = exp(1-(td-td(1))/(td(end)-td(1))*(1-sustain))/exp(1);  % envelope for Decay
-es = exp(sustain)/exp(1);            % envelope for Sustain
-er = exp(sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain)/exp(1);    % envelope for Release
+ea = (1-10.^(-ta))/(1-10.^(-ta(end)));    % envelope for Attack
+ed = (1-sustain)*(exp(-(td-td(end)))-1)/(exp(-(td(1)-td(end)))-1)+sustain;  % envelope for Decay
+es = sustain;            % envelope for Sustain
+er = sustain*...
+    (10.^(sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain)-1)/...
+    (10.^sustain-1);    % envelope for Release
 
 wav = [ea.*wa, ed.*wd, es.*ws, er.*wr];
 
 end
 ```
+
+经过参数的测试, 确定了指数衰减系数(事实上不同底数差别不大), 典型的ADSR参数调制出的单音波形如下:
+
+![典型ADSR](pic/typical-ADSR.png)
 
 即将输入音乐分段调制后再输出, 包络形状由ADSR四个参数控制, 对于单频信号, ADSR对其音色的影响如下:
 

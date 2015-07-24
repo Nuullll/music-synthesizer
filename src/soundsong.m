@@ -1,7 +1,7 @@
 % src/soundsong.m
 
-function wav = soundsong(BPM,key,flag,song,fs,ADSR)
-% soundsong(BPM,key,song,fs,ADSR)
+function wav = soundsong(BPM,key,flag,song,fs,ADSR,harmonics)
+% soundsong(BPM,key,song,fs,ADSR,harmonics)
 % 输入:
 %   <float> BPM: beats per minute
 %   <char> key: 歌曲的调
@@ -10,6 +10,7 @@ function wav = soundsong(BPM,key,flag,song,fs,ADSR)
 %       休止符用-inf表示
 %   <float> fs: 采样频率
 %   <1-by-4 matrix> ADSR: adsr包络控制
+%   <1-by-m matrix> harmonics: 各阶谐波分量幅度, harmonics(1)为基波幅度
 % 返回值:
 %   <row vector> wav: 合成的歌曲
 
@@ -24,11 +25,11 @@ release = ADSR(4);
 for i = 1:size(song,1)
     t = 0:1/fs:(tpb*song(i,2));     % time sequence
     f = freqmap(key,song(i,1),flag);
+    w = harmonics*sin(2*pi*f*(1:length(harmonics)).'*t);  % add harmonics
     if song(i,1) == -inf
         wav = [wav, zeros(1,length(t))];
     else
-        wav = [wav, adsr(attack,decay,sustain,release,...
-            sin(2*pi*f*t)+0.2*sin(2*pi*2*f*t)+0.3*sin(2*pi*3*f*t),t)];
+        wav = [wav, adsr(attack,decay,sustain,release,w,t)];
     end
 end
 
