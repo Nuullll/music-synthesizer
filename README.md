@@ -1,7 +1,7 @@
 # music-synthesizer
 Homework No.1 for summer course: MATLAB
 
-# 音乐合成
+# 简单的合成音乐
 
 ## 简谱入门
 
@@ -224,7 +224,7 @@ end
 
 |起音A|衰减D|延音S|释放R|音色|
 |:---:|:---:|:---:|:---:|:--:|
-|0.9|0.05|0.0001|0.05|笛子|
+|0.9|0.05|0.0001|0.05|管乐|
 |0.05|0.9|0.0001|0.05|钢琴|
 |0.05|0.05|0.0001|0.9|电话按键音|
 |0.05|0.05|0.05|0.05|拨弦音|
@@ -342,7 +342,7 @@ harmonics*sin(2*pi*f*(1:length(harmonics)).'*t);  % add harmonics
 
 用上述代码替换原来的单频信号即可
 
-- 模仿吉他音
+- **模仿吉他音**
 
     根据参考资料<sup>[2]</sup>的吉他频谱: 
 
@@ -362,6 +362,30 @@ harmonics*sin(2*pi*f*(1:length(harmonics)).'*t);  % add harmonics
 
     听起来有点像吉他! *吉他音的谐波分布与弹奏方式有较大关系*, 如`harmonics = [0.55 0.95 0.65 0.3 0.1]`也可以产生类似吉他音的效果, 这种情况下, `ADSR`包络参数对音色影响也较大.
 
+
+## Show time!
+
+```matlab
+audiowrite('../wav/东方红.wav',soundsong(140,'F',0,ChinaRed,fs,adsr,harmonics),fs);
+audiowrite('../wav/小苹果.wav',soundsong(180,'F',0,Apple,fs,adsr,harmonics),fs);
+wav1 = soundsong(140,'D',-1,Hottest1,fs,adsr,harmonics);    
+wav2 = soundsong(140,'E',0,Hottest2,fs,adsr,harmonics);     % 变调
+audiowrite('../wav/最炫民族风.wav',[wav1,wav2],fs);
+audiowrite('../wav/安静.wav',soundsong(70,'G',0,Quiet,fs,adsr,harmonics),fs);
+audiowrite('../wav/Summer.wav',soundsong(140,'E',-1,Summer,fs,adsr,harmonics),fs);
+audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05 0.001 0.05],[1]),fs);
+```
+
+请君欣赏
+
+|歌名|BPM|调|模仿乐器|
+|:--:|:--:|:--:|:--:|
+|[东方红](wav/东方红.wav)|140|F|钢琴|
+|[小苹果](wav/小苹果.wav)|180|F|钢琴|
+|[最炫民族风](wav/最炫民族风.wav)|140|<sup>♭</sup>D转E|钢琴|
+|[安静](wav/安静.wav)|70|G|钢琴|
+|[Summer](wav/Summer.wav)|140|<sup>♭</sup>E|钢琴|
+|[菊花台](wav/菊花台.wav)|84|F|管乐|
 
 
 # 参考文献
