@@ -472,6 +472,38 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
     ![解释2](pic/F-periodical.png)
 
 
+## 自动分析音乐
+
+基于上一节中基频分析的方法, 用代码实现自动分析, 需要注意的是, 上一节中的`realwave`片段本身**具有较高的相似度**, 假设我们要分析的音乐也具有这样的特性(由于是乐音, 这个假设较为合理), 不妨抽取一些片段来验证:
+
+```matlab
+r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
+```
+
+![slice1](pic/slice1.png)
+![slice2](pic/slice2.png)
+![slice3](pic/slice3.png)
+![slice4](pic/slice4.png)
+
+从上述抽样来看, 的确具有较高的**自相似性**
+
+1. **除去乐曲开头和结尾的静音片段**
+
+    由于不可能达到绝对的静音, 认为幅度小于阈值A<sub>th</sub>时即为无声;
+    经测试, 取`Ath = 1e-3`(-60dB)
+
+    ```matlab
+    %% Delete mute slice
+    Ath = 1e-3;         % -60dB
+    music_begin = find(fmt>Ath,1);
+    music_stop = find(fmt>Ath,1,'last');
+    fmt = fmt(music_begin:music_stop);
+    ```
+
+    `fmt`长度由`131072`变为`130385`
+
+2. **
+
 # 参考文献
 
 [1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015/7/23
