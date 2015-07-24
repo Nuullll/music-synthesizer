@@ -200,14 +200,12 @@ wd = wavin(floor(attack*N)+1:floor((attack+decay)*N));
 ws = wavin(floor((attack+decay)*N)+1:floor((1-release)*N));
 wr = wavin(floor((1-release)*N)+1:end);
 
-ea = ta/ta(end);    % envelope for Attack
-ed = 1-(td-td(1))/(td(end)-td(1))*(1-sustain);  % envelope for Decay
-es = sustain;            % envelope for Sustain
-er = sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain;    % envelope for Release
+ea = exp(ta/ta(end))/exp(1);    % envelope for Attack
+ed = exp(1-(td-td(1))/(td(end)-td(1))*(1-sustain))/exp(1);  % envelope for Decay
+es = exp(sustain)/exp(1);            % envelope for Sustain
+er = exp(sustain-(tr-tr(1))/(tr(end)-tr(1))*sustain)/exp(1);    % envelope for Release
 
 wav = [ea.*wa, ed.*wd, es.*ws, er.*wr];
-
-wav = exp(-t).*wav;
 
 end
 ```
