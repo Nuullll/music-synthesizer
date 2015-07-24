@@ -388,6 +388,51 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
 |[菊花台](wav/菊花台.wav)|84|F|管乐|
 
 
+
+# 分析音乐
+
+## 预处理(除去非线性谐波和噪声)
+
+- 仔细分析`wave2proc`的时域波形
+
+    ![wave2proc](pic/wave2proc.png)
+
+    大致有**十个周期**, 而`length(wave2proc)=243`, 利用`resample(wave2proc,250,243)`进行重采样, 使其长度成为10的倍数
+
+    ![resampled-wave2proc](pic/resampled-wave2proc.png)
+
+    从时域上看, 十个周期几乎完全一样, 要从原波形`realwave`得到上图波形, 可采用**平均去噪**的方法
+
+    - 将`realwave`重采样, 使其长度变为250
+
+        ![resampled-realwave](pic/resampled-realwave.png)
+
+    - 对十个周期进行平均, 将得到的平均周期(长度为25)复制10份得到`resampled_wave2proc`
+
+        ```matlab
+        y = resample(realwave,250,243);
+        A = reshape(y,25,10).';
+        p = mean(A);
+        resampled_wave2proc = repmat(p.',10,1);
+        wav = resample(resampled_wave2proc,243,250);
+        hold on;
+        plot(t,wave2proc,'k');
+        plot(t,wav,'r');
+        ```
+
+    ![对比wave2proc](pic/contrast-wave2proc.png)
+
+    由图像看出, 用以上方法得到的`wav`与`wave2proc`几乎一样, 于是将以上过程作为去除非线性谐波和噪声的预处理过程
+
+- 预处理效果
+
+    从频域对比`realwave`和`wave2proc`:
+
+    ![预处理效果](pic/contrast-preproc.png)
+
+    可以看出, `wave2proc`的频谱比`realwave`少了非线性谐波和噪声的干扰, 使得音调特点更加突出.
+    
+
 # 参考文献
 
 [1] [Logic Pro 9 乐器_ 减法合成器的工作原理](http://help.apple.com/logicpro/mac/9.1.6/cn/logicpro/instruments/index.html#chapter=A%26section=3%26tasks=true), viewed on 2015/7/23
