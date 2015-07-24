@@ -1,7 +1,7 @@
 # music-synthesizer
 Homework No.1 for summer course: MATLAB
 
-# 简单的合成音乐
+# 合成音乐-初级
 
 ## 简谱入门
 
@@ -389,7 +389,7 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
 
 
 
-# 分析音乐
+# 分析音乐-中级
 
 ## 预处理(除去非线性谐波和噪声)
 
@@ -431,7 +431,40 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
     ![预处理效果](pic/contrast-preproc.png)
 
     可以看出, `wave2proc`的频谱比`realwave`少了非线性谐波和噪声的干扰, 使得音调特点更加突出.
-    
+
+
+## 基频分析
+
+- 取出单周期信号分析
+
+    ```matlab
+    p = wave2proc(1:24);    % 近似地取出一个周期
+    fft_plot(p,fs);         % 自定义fft_plot函数
+    ```
+
+    ![单周期基频分析](pic/single-spectrum.png)
+
+    **得到基频为333.3Hz, 这个频率介于C大调的Mi和Fa之间, 无法确定具体是哪个音**, 可见此法很不精确
+
+- 对整个`wave2proc`分析
+
+    ```matlab
+    fft_plot(wave2proc,fs);
+    ```
+
+    ![整体信号基频分析](pic/whole-spectrum.png)
+
+    **得到基频为329.2Hz, 基本可以确认这是C大调的Mi音(329.63Hz)**
+
+- `wave2proc`重复100遍后分析
+
+    ```matlab
+    fft_plot(repmat(wave2proc,100,1),fs);
+    ```
+
+    ![重复100遍基频分析](pic/repeated-spectrum.png)
+
+    **基频为329.2Hz, 结果与上一种方法相同, 频谱更接近冲激函数**
 
 # 参考文献
 
