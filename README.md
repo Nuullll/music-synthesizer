@@ -30,7 +30,7 @@ Homework No.1 for summer course: MATLAB
 
 另外注意到高音1的频率是1频率的两倍, 即高了一个八度.
 
-- 创建`src/freqmap.m`函数实现计算给定调给定音频率的功能
+- 创建[src/freqmap.m](src/freqmap.m)函数实现计算给定调给定音频率的功能
 
     ```matlab
     >> help freqmap
@@ -491,6 +491,8 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
 
 从上述抽样来看, 的确具有较高的**自相似性**
 
+按一下步骤进行分析([src/analyzer.m](src/analyzer.m))
+
 1. **除去乐曲开头和结尾的静音片段**
 
     由于不可能达到绝对的静音, 认为幅度小于阈值A<sub>th</sub>时即为无声;
@@ -626,11 +628,31 @@ end
 
 ### 方法2 - 时频分析
 
-受CoolEdit中时频图的启发(下图), 可以直接利用`spectrogram`函数方便地进行分段短时傅里叶变换并整合分析, 这种方法的好处在于**不需要手动标定每个音开始的时刻**, 时频图会告诉我们答案
+受CoolEdit中时频图的启发(下图), 可以直接利用`spectrogram`函数方便地进行**分段短时傅里叶变换并整合分析**, 这种方法的好处在于**不需要手动标定每个音开始的时刻**, 时频图会告诉我们答案
 
 ![CoolEdit时频图](pic/tfplot-CoolEdit.png)
 
+绘制时频图如下
 
+```matlab
+%% Spectrogram and plot
+[S,F,T,P] = spectrogram(fmt, 2048, 2000, 4000, fs);
+
+figure(1);
+surf(T,F,10*log10(P),'edgecolor','none');
+view(0,90);title('时频分析');xlabel('t/s');ylabel('f/Hz');
+axis([0 16 0 4000]);
+```
+
+![时频图](pic/tfplot.png)
+
+`spectrogram`函数返回的`F,T,P`分别代表**频率序列**, **时间序列**以及**在某时刻某个频点附近的功率大小**, 
+
+调用`spectrogram`时取`NFFT=4000`, 这决定了频率序列的间隔大小为`fs/NFFT=2Hz`, 这个分辨率足以分辨音乐的曲调(因为较低的相邻两音之间频率差也在10Hz左右) .
+
+于是, 按一下步骤分析音调[src/analyzer2.m](src/analyzer2.m)
+
+1. 
 
 # 参考文献
 
