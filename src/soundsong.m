@@ -29,9 +29,12 @@ for i = 1:size(song,1)
     if song(i,1) == -inf
         wav = [wav, zeros(1,length(t))];
     else
-        wav = [wav, adsr(attack,decay,sustain,release,w,t)];
+        w = adsr(attack,decay,sustain,release,w,t);
+        wav = [wav,w];
     end
 end
+
+wav = wav/max(wav);     % normalization
 
 sound(wav,fs);
 
