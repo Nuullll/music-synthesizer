@@ -14,4 +14,36 @@ axis([0 16 0 4000]);
 [sortP,I] = sort(P,'descend');
 sortf = F(I);   % column j of sortf is descend-sorted frequency at time T(j)
 
-%% 
+%% Detect frequency
+Pth1 = 1e-4;     % 1st threshold of power
+Pth2 = 1e-5;     % 2nd threshold of power
+Pth3 = 5e-6;     % 3rd threshold of power
+
+funds = cell(size(sortf,2),1);  % to save fundamental results
+
+for i = 1:size(sortf,2)
+    fundamental = [];
+    col = sortP(:,i);
+    f = sortf((col>Pth1),i);
+    if isempty(f)
+        f = sortf((col>Pth2));
+        if isempty(f)
+            f = sortf((col>Pth3));
+        end
+    end
+   
+    for j = 1:length(f)
+        if isempty(fundamental)
+            fundamental = [fundamental,f(j)];
+        else
+            ratio = f(j)./fundamental;
+            inrange = (ratio<(round(ratio)*1.05)) + (ratio>(round(ratio)*0.95));
+            if all(inrange~=2)
+                fundamental = [fundamental,f(j)];
+            end
+        end
+    end
+    funds{i} = fundamental;
+end
+
+
