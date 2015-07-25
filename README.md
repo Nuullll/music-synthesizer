@@ -374,6 +374,7 @@ audiowrite('../wav/最炫民族风.wav',[wav1,wav2],fs);
 audiowrite('../wav/安静.wav',soundsong(70,'G',0,Quiet,fs,adsr,harmonics),fs);
 audiowrite('../wav/Summer.wav',soundsong(140,'E',-1,Summer,fs,adsr,harmonics),fs);
 audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05 0.001 0.05],[1]),fs);
+audiowrite('../wav/千本樱.wav',soundsong(154,'C',0,Senbonzakura,fs,[0.05 0.05 2 0.15],[1 0.5]),fs);
 ```
 
 请君欣赏
@@ -386,6 +387,7 @@ audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05
 |[安静](wav/安静.wav)|70|G|钢琴|
 |[Summer](wav/Summer.wav)|140|<sup>♭</sup>E|钢琴|
 |[菊花台](wav/菊花台.wav)|84|F|管乐|
+|[千本樱](wav/千本樱.wav)|154|C|笛子|
 
 
 
@@ -494,15 +496,17 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
 
     ```matlab
     %% Delete mute slice
-    Ath = 1e-3;         % -60dB
-    music_begin = find(fmt>Ath,1);
-    music_stop = find(fmt>Ath,1,'last');
+    Ath = 1e-3;                             % -60dB
+    music_begin = find(fmt>Ath,1);          % 665
+    music_stop = find(fmt>Ath,1,'last');    % 131049
     fmt = fmt(music_begin:music_stop);
     ```
 
     `fmt`长度由`131072`变为`130385`
 
-2. **
+2. **利用自相关函数确定重复周期**
+
+    给定一段`slice`
 
 # 参考文献
 
