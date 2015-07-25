@@ -476,7 +476,9 @@ audiowrite('../wav/千本樱.wav',soundsong(154,'C',0,Senbonzakura,fs,[0.05 0.3 
 
 ## 自动分析音乐
 
-基于上一节中基频分析的方法, 用代码实现自动分析, 需要注意的是, 上一节中的`realwave`片段本身**具有较高的相似度**, 假设我们要分析的音乐也具有这样的特性(由于是乐音, 这个假设较为合理), 不妨抽取一些片段来验证:
+### 方法1 - 分段除噪
+
+基于上一节中基频分析的方法, 用代码实现自动分析, 需要注意的是, 上一节中的`realwave`片段本身**具有较高的相似度**, 假设我们要分析的音乐也具有这样的特性, 不妨抽取一些片段来验证:
 
 ```matlab
 r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
@@ -547,7 +549,80 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
 
         ![预处理](pic/preprocess-slice.png)
 
-4. 
+4. **提取强频率分量**
+
+    先从直观上感受一下经预处理后频谱的变化:
+
+    ![频谱变化](pic/analyze-spectrum.png)
+
+    **平均除噪后的频谱是先将波形重复了100次后再绘制的, 接近冲激函数**
+
+    设定频谱能量阈值`E=100`(因为重复了100次, 频谱能量也会倍乘100), 将能量高的分量筛选出来
+
+    ```matlab
+    E = 100;                % threshold of E
+    f = find(y>E)*fs/N/100; % pick out powerful frequency
+    f = f(1:end/2);         % delete symmetry elements
+    ```
+
+    对于测试的`slice`, 提取结果为`f = [224.3200;672.3200]`
+
+5. **从强频率分量中分析出基频分量**
+
+    由于可能有多个基频分量, 故不能简单地取出`f`的第一个元素作为基频分量, 因此用以下算法分析基频分量:
+
+    **对f中的元素遍历, 若该元素大约是其他元素的整数倍, 则不是基频分量, 遍历完剩下的即基频分量**
+
+    由于人耳识别振动频率的能力大约在±5%<sup>[4]</sup>, 对整数倍的判定定为误差在5%以内
+
+    ```matlab
+    %% detect fundamental frequency
+    fundamental = [];
+    for i = 1:length(f)
+        if isempty(fundamental)
+            fundamental = [fundamental,f(i)];
+        else
+            ratio = f(i)./fundamental;
+            inrange = (ratio<(round(ratio)*1.05)) + (ratio>(round(ratio)*0.95));
+            if all(inrange~=2)
+                fundamental = [fundamental,f(i)];
+            end
+        end
+    end
+    ```
+
+**基本过程如上, 我们来看一下效果**
+
+```matlab
+%% Read wav from file
+fmt = wavread('G:\Vone\Tsinghua\2015summer\matlab\音乐合成\音乐合成所需资源\fmt.wav');
+fs = 8000;
+
+%% Delete mute slice
+Ath = 1e-3;         % -60dB
+music_begin = find(fmt>Ath,1);
+music_stop = find(fmt>Ath,1,'last');
+fmt = fmt(music_begin:music_stop);
+
+%% Processing slices
+l = 200;    % length of each slice
+note = [];
+for i = 1:floor(length(fmt)/l)
+    note = [note,detect_fundamental_f(fmt((i-1)*l+1:i*l),fs)];
+end
+```
+
+![分析结果](pic/analyze-result1.png)
+
+任取两个点, 分析出的基频频率都找不到对应的音(误差太大), 这是为何呢? 笔者仔细研究后发现, 问题出在利用**自相关函数**自动确定周期的部分, 对于下图这个片段
+
+![更真实周期](pic/real-period.png)
+
+把红色部分视为一个周期似乎更准确, 而自相关函数的峰值很难分辨出这样细微的区别, 因此这个方法分析出的音调相当不准确, 也很难改进, 下面采用**时频分析**的方法来确定音调, 效果明显好得多.
+
+### 方法2 - 时频分析
+
+
 
 # 参考文献
 
@@ -556,3 +631,5 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
 [2] [Computer Music_ Guitar Spectrum](http://computermusicresource.com/guitar.spectrum.html), viewed on 2015/7/24
 
 [3] 谷源涛, *2015春信号与系统09第八讲3.9-3.12(18)*, 2015
+
+[4] 谷源涛等, *信号与系统-MATLAB综合实验(71)*, 2010
