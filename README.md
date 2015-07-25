@@ -374,7 +374,7 @@ audiowrite('../wav/最炫民族风.wav',[wav1,wav2],fs);
 audiowrite('../wav/安静.wav',soundsong(70,'G',0,Quiet,fs,adsr,harmonics),fs);
 audiowrite('../wav/Summer.wav',soundsong(140,'E',-1,Summer,fs,adsr,harmonics),fs);
 audiowrite('../wav/菊花台.wav',soundsong(84,'F',0,Chrysanthemums,fs,[0.9 0.05 0.001 0.05],[1]),fs);
-audiowrite('../wav/千本樱.wav',soundsong(184,'C',0,Senbonzakura,fs,[0.05 0.3 0.5 0.05],[1 0.4 0.8 0.9]),fs);
+audiowrite('../wav/千本樱.wav',soundsong(154,'C',0,Senbonzakura,fs,[0.05 0.3 0.5 0.05],[1 0.4 0.8 0.9]),fs);
 ```
 
 请君欣赏
