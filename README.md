@@ -646,13 +646,21 @@ axis([0 16 0 4000]);
 
 ![时频图](pic/tfplot.png)
 
-`spectrogram`函数返回的`F,T,P`分别代表**频率序列**, **时间序列**以及**在某时刻某个频点附近的功率大小**, 
+`spectrogram`函数返回的`F,T,P`分别代表**频率序列**,**时间序列**以及**在某时刻某个频点附近的功率大小**, 
 
 调用`spectrogram`时取`NFFT=4000`, 这决定了频率序列的间隔大小为`fs/NFFT=2Hz`, 这个分辨率足以分辨音乐的曲调(因为较低的相邻两音之间频率差也在10Hz左右) .
 
-于是, 按一下步骤分析音调[src/analyzer2.m](src/analyzer2.m)
+于是, 按一下步骤分析音调([src/analyzer2.m](src/analyzer2.m))
 
-1. 
+1. **按功率强弱对各时刻的频率分量排序**
+
+    ```matlab
+    %% Sort
+    [sortP,I] = sort(P,'descend');
+    sortf = F(I);   % column j of sortf is descend-sorted frequency at time T(j)
+    ```
+
+    则`sortf`
 
 # 参考文献
 

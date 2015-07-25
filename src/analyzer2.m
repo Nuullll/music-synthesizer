@@ -10,11 +10,8 @@ surf(T,F,10*log10(P),'edgecolor','none');
 view(0,90);title('Ê±Æµ·ÖÎö');xlabel('t/s');ylabel('f/Hz');
 axis([0 16 0 4000]);
 
-%% Pick out powerful frequency
+%% Sort
 [sortP,I] = sort(P,'descend');
 sortf = F(I);   % column j of sortf is descend-sorted frequency at time T(j)
-% figure(2);
-% plot(T,sortf(1,:),'k');hold on;
-% plot(T,sortf(2,:),'r');
-% % plot(T,sortf(3,:),'b');
-% legend('1st','2nd','3rd');hold off;
+
+%% 
