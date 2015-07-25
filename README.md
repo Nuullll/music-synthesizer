@@ -573,7 +573,7 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
 
     **对f中的元素遍历, 若该元素大约是其他元素的整数倍, 则不是基频分量, 遍历完剩下的即基频分量**
 
-    由于人耳识别振动频率的能力大约在±5%<sup>[4]</sup>, 对整数倍的判定定为误差在5%以内
+    由于人耳识别振动频率的能力大约在±0.5%<sup>[4]</sup>, 对整数倍的判定定为误差在5%以内
 
     ```matlab
     %% detect fundamental frequency
@@ -583,7 +583,7 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
             fundamental = [fundamental,f(i)];
         else
             ratio = f(i)./fundamental;
-            inrange = (ratio<(round(ratio)*1.05)) + (ratio>(round(ratio)*0.95));
+            inrange = (ratio<(round(ratio)*1.005)) + (ratio>(round(ratio)*0.995));
             if all(inrange~=2)
                 fundamental = [fundamental,f(i)];
             end
@@ -626,7 +626,7 @@ end
 
 ### 方法2 - 时频分析
 
-受CoolEdit中时频图的启发(下图), 可以直接利用`spectrogram`函数方便地进行分段短时傅里叶变换并整合分析, 这种方法的好处在于**不需要知道每个音开始的具体时刻**, 时频图会告诉我们答案
+受CoolEdit中时频图的启发(下图), 可以直接利用`spectrogram`函数方便地进行分段短时傅里叶变换并整合分析, 这种方法的好处在于**不需要手动标定每个音开始的时刻**, 时频图会告诉我们答案
 
 ![CoolEdit时频图](pic/tfplot-CoolEdit.png)
 

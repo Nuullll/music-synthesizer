@@ -50,7 +50,7 @@ for i = 1:length(f)
         fundamental = [fundamental,f(i)];
     else
         ratio = f(i)./fundamental;
-        inrange = (ratio<(round(ratio)*1.05)) + (ratio>(round(ratio)*0.95));
+        inrange = (ratio<(round(ratio)*1.005)) + (ratio>(round(ratio)*0.995));
         if all(inrange~=2)
             fundamental = [fundamental,f(i)];
         end
