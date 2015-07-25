@@ -506,7 +506,48 @@ r=randi(N,1,1),plot(fmt(r:r+249));  % 片段长度为250
 
 2. **利用自相关函数确定重复周期**
 
-    给定一段`slice`
+    给定一个音乐片段`slice`(取长度`l=250`), 画出自相关函数, 可从极值点大致推测出周期长度
+
+    ![自相关](pic/acf.png)
+
+    代码无法从图像读取极值点, 采用差分方法找极大值:
+
+    ```matlab
+    N = length(slice);
+    acf = xcorr(slice);     % auto corr function
+    figure(1);
+    subplot(2,1,1);plot(slice);title('slice');
+    subplot(2,1,2);plot(acf);title('acf');
+    maxs = find(diff(sign(diff(acf)))==-2)+1;   % find local maximums of acf
+    period_length = maxs(find(maxs>N,1)) - N;   % estimate length of each period
+    periods = ceil(N/period_length);    % estimate numbers of period
+    ```
+
+3. **预处理, 平均除噪**
+
+    求得了片段的周期长度`period_length`和周期数`periods`, 可进行预处理, 即平均除噪
+
+    - 先对`slice`重采样
+
+        ```matlab
+        %% preprocess
+        y = resample(slice,periods*period_length,N);
+        ```
+
+        ![slice重采样](pic/resampled-slice.png)
+
+    - 平均除噪
+
+        ```matlab
+        A = reshape(y,period_length,periods).';
+        p = mean(A).';
+        w = repmat(p,periods,1);
+        w = resample(w,N,periods*period_length);
+        ```
+
+        ![预处理](pic/preprocess-slice.png)
+
+4. 
 
 # 参考文献
 

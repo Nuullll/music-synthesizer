@@ -5,7 +5,7 @@ N = length(y);
 n = 0:N-1;
 % t = n/fs;
 f = n/N*fs;
-plot(f,real(fft(y)));
+plot(f,abs(fft(y)));
 
 end
 
