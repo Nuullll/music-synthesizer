@@ -97,4 +97,6 @@ for i = 1:size(nt,1)
     wav = [wav,w];
 end
 wav = wav/max(wav);
+figure;subplot(2,1,1);plot(fmt);
+subplot(2,1,2);plot(wav);
 sound(wav,fs);
