@@ -1,7 +1,18 @@
-# music-synthesizer
-Homework No.1 for summer course: MATLAB
+# 合成音乐大作业
 
-# 1. 合成音乐-初级
+** 郭一隆 无36 2013011189
+
+## 非原创等级声明
+
+**改进参考**
+
+`realwave`到`wave2proc`预处理部分(平均除噪法)的思路为同学之间讨论结果, 在讨论结果基础上优化了采样数目以提升速度;
+
+**借鉴了其他资料(网络, 教材, 讲义)的部分标注了参考资料**
+
+**其余内容完全原创**
+
+# 合成音乐-初级
 
 ## 简谱入门
 
@@ -99,7 +110,7 @@ Homework No.1 for summer course: MATLAB
 - 简谱中用0表示休止符, 即无声的音符, 其时值规则同上
 
 
-## 用数据表示简谱
+## 用数据表示简谱 - 练习题(1)
 
 ![东方红前四小节](pic/ChinaRed.png)
 
@@ -162,7 +173,7 @@ song = [5, 1;       % 将一段乐谱表示为一个n-by-2矩阵
     **注: 将`soundsong.m`中的`sin`函数换成`sawtooth`, `square`等函数会听到不同音色的音乐, 因为锯齿波和方波含有不同的谐波分量, 改变了音色**
 
 
-## ADSR包络控制<sup>[1]</sup>
+## ADSR包络控制<sup>[1]</sup> - 练习题(2)
 
 ![ADSR](pic/ADSR.png)
 
@@ -233,7 +244,7 @@ end
 |0.05|0.25|0.15|0.15|木琴|
 
 
-## 变调
+## 变调 - 练习题(3)
 
 - 升一个八度
 
@@ -332,7 +343,7 @@ end
         ![升半个音阶](pic/sharp-ChinaRed.png)
 
 
-## 谐波(Harmonics)
+## 谐波(Harmonics) - 练习题(4)
 
 直接修改`soundsong`函数, 增加`harmonics`接口
 
@@ -365,7 +376,7 @@ harmonics*sin(2*pi*f*(1:length(harmonics)).'*t);  % add harmonics
     听起来有点像吉他! *吉他音的谐波分布与弹奏方式有较大关系*, 如`harmonics = [0.55 0.95 0.65 0.3 0.1]`也可以产生类似吉他音的效果, 这种情况下, `ADSR`包络参数对音色影响也较大.
 
 
-## Show time!
+## Show time! - 练习题(5)
 
 ```matlab
 audiowrite('../wav/东方红.wav',soundsong(140,'F',0,ChinaRed,fs,adsr,harmonics),fs);
@@ -395,7 +406,19 @@ audiowrite('../wav/千本樱.wav',soundsong(154,'C',0,Senbonzakura,fs,[0.05 0.3 
 
 # 分析音乐-中级
 
-## 预处理(除去非线性谐波和噪声)
+听一下真实的吉他音`fmt.wav` - **练习题(6)**
+
+比合成音听起来真实的多, 主要特点:
+
+- 叠音现象频繁, 吉他拨弦音衰减很慢
+
+- 和弦, 同时弹奏多个音
+
+- 泛音丰富
+
+- 不同的音振幅不同, 强弱分明
+
+## 预处理(除去非线性谐波和噪声) - 练习题(7)
 
 - 仔细分析`wave2proc`的时域波形
 
@@ -437,7 +460,7 @@ audiowrite('../wav/千本樱.wav',soundsong(154,'C',0,Senbonzakura,fs,[0.05 0.3 
     可以看出, `wave2proc`的频谱比`realwave`少了非线性谐波和噪声的干扰, 使得音调特点更加突出.
 
 
-## 基频分析
+## 基频分析 - 练习题(8)
 
 - 取出单周期信号分析
 
@@ -476,7 +499,7 @@ audiowrite('../wav/千本樱.wav',soundsong(154,'C',0,Senbonzakura,fs,[0.05 0.3 
     ![解释2](pic/F-periodical.png)
 
 
-## 自动分析音乐
+## 自动分析音乐 - 练习题(9)
 
 ### 方法1 - 分段除噪
 
@@ -913,7 +936,7 @@ axis([0 16 0 4000]);
 
 # 合成音乐 - 高级
 
-## 从`wave2proc`获取谐波信息
+## 从`wave2proc`获取谐波信息 - 练习题(10)
 
 如图所示, 
 
@@ -924,6 +947,126 @@ axis([0 16 0 4000]);
 ```matlab
 soundsong(140,'F',0,ChinaRed,fs,[0.05 0.4 0.8 0.5],harmonics);
 ```
+
+![仿吉他弹奏东方红](pic/fmt-harmonics-ChinaRed.png)
+
+**效果**: 听起来有拨弦的感觉, 音色虽然接近吉他但听起来还是不像, 这大概是因为吉他弹奏一个音符后, 音符衰减过程很缓慢, 下一个音的弹奏总是会与上个音的衰减阶段有相当部分的重合, 而`soundsong`函数的拼接是**没有叠音效果**的, 即上一个音符完全衰减至零后, 下一个音符才会发声; 另外, 吉他的和弦效果在*东方红*的谱子中无法体现
+
+## 模仿泛音丰富的吉他 - 练习题(11)
+
+1. 先将东方红转为**C大调**
+
+    ```matlab
+    CChinaRed = [8 1;8 .5;9 .5;5 2;4 1;4 .5;2 .5;5 2];
+
+    soundsong(140,'F',0,ChinaRed,fs,[0.05 0.4 0.8 0.5],harmonics);
+    soundsong(140,'C',0,CChinaRed,fs,[0.05 0.4 0.8 0.5],harmonics);     % 试听, 确认转调正确
+    ```
+
+2. 在自动分析`fmt`所得的结果中, 寻找与东方红各音最接近的音
+
+    由于`fmt`音乐音调较低, 东方红前三个音**高音1,高音1,高音2**缺乏足够的泛音信息, 故取`harmonics = [1]`, 即只有基频分量;
+
+    ```matlab
+    mpow = sortf(1:3,:);  % 取出各时刻最强的3个频率分量
+    find(abs(mpow-392)<392*0.05);   % 以频率为392Hz的So为例, 找到该音所在时域位置
+    ```
+
+    从`find`返回的结果来看, 392Hz分量在`T(617)~T(650)`区间能量较大, 不妨对该片段进行傅里叶分析
+
+    ```matlab
+    fft_plot(fmt(T(617)*fs:T(670)*fs),fs);
+    ```
+
+    ![392谐波](pic/fmt-392-harmonics.png)
+
+    于是可得`harmonics = [1 0.1]`
+
+    其余的音均按上述步骤求得各自的`harmonics`, 存入`containers.Map`容器`har`
+
+    则得**C大调**东方红谐波分量表`har`
+
+    |唱名|谐波分量|
+    |:--:|:--:|
+    |2|[1 0.9 0.25 0 0 0.2]|
+    |4|[1 0.2 0.1 0.1]|
+    |5|[1 0.1]|
+    |8|[1]|
+    |9|[1]|
+
+    重写函数`soundsong`以适应Map接口([src/soundsong1.m](src/soundsong1.m))
+
+    ```matlab
+    % src/soundsong1.m
+
+    function wav = soundsong1(BPM,key,flag,song,fs,ADSR,har)
+    % soundsong(BPM,key,song,fs,ADSR,harmonics)
+    % 输入:
+    %   <float> BPM: beats per minute
+    %   <char> key: 歌曲的调
+    %   <int> flag: -1表示降半个音阶(?), 1表示升半个音阶(?)
+    %   <n-by-2 matrix> song: 乐谱, 第一列为音符唱名, 第二列为各音符持续拍数
+    %       休止符用-inf表示
+    %   <float> fs: 采样频率
+    %   <1-by-4 matrix> ADSR: adsr包络控制
+    %   <containers.Map> har: 各音对应各阶谐波分量幅度
+    % 返回值:
+    %   <row vector> wav: 合成的歌曲
+
+    tpb = 60/BPM;   % time per beat (seconds)
+    wav = [];       % intialize wav
+
+    attack = ADSR(1);
+    decay = ADSR(2);
+    sustain = ADSR(3);
+    release = ADSR(4);
+
+    for i = 1:size(song,1)
+        t = 0:1/fs:(tpb*song(i,2));     % time sequence
+        f = freqmap(key,song(i,1),flag);
+        if ~isKey(har,song(i,1))
+            harmonics = [1];    % default
+        else
+            harmonics = har(song(i,1));
+        end
+        w = harmonics*sin(2*pi*f*(1:length(harmonics)).'*t);  % add harmonics
+        if song(i,1) == -inf
+            wav = [wav, zeros(1,length(t))];
+        else
+            w = adsr(attack,decay,sustain,release,w,t);
+            wav = [wav,w];
+        end
+    end
+
+    wav = wav/max(wav);     % normalization
+
+    sound(wav,fs);
+
+    end
+    ```
+
+    ```matlab
+    soundsong1(140,'C',0,CChinaRed,fs,[0.05 0.4 0.8 0.5],har);
+    ```
+
+    wav文件[wav/fmt-ChinaRed.wav](wav/fmt-ChinaRed.wav), 有了明显的拨弦音, 音色趋于吉他, 但由于发音过于纯净, 没有吉他弹奏的混叠交错之感
+
+
+# 写在最后
+
+1. GUI实在是不太会写..orz
+
+2. 经过反复的参数调整, 最后发现: **包络决定音色**, **谐波能带来拨弦颤动之音, 但似乎对音色影响没有包络的影响那么大**
+
+3. 应当增加叠音接口, 更接近真实
+
+4. 应当增加和弦接口, 同时两个音符发声
+
+5. 自动分析音调过程中, 标定各音开始时刻必不可少, 若少了这一步, 会对分析结果造成很大影响
+
+6. 按音匹配谐波分量过程不够自动化
+
+7. 在一首歌曲中, 节拍是有强弱之分的, 一半每小节的第一拍为强拍, 最后一拍为弱拍, 应当增加这个功能, 使歌曲更加有起伏感
 
 
 # 参考文献
