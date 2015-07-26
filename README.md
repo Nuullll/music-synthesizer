@@ -666,8 +666,6 @@ axis([0 16 0 4000]);
 
 2. **对各时刻达到阈值的频率分量进行处理**
 
-    处理包括: **合并**, **检出基频**
-
     我们不妨将第一列达到阈值的频率分量取出
 
     ```matlab
@@ -713,7 +711,164 @@ axis([0 16 0 4000]);
        216
     ```
 
-    
+    创建[src/ffilter.m](src/ffilter.m), 对上述的频率值进行**合并**, 并**去除高次谐波分量**:
+
+    ```matlab
+    function fundamental = ffilter(f)
+    %fundamental = ffilter(f)
+    %输入:
+    %   <vector> f: 一系列频率值
+    %输出:
+    %   <vector> fundamental: 在输入的一系列频率值中, 找出可能的基频
+    %注: 优先将f中靠前的元素作为基频
+    fundamental = [];
+    for j = 1:length(f)
+        if isempty(fundamental)
+            fundamental = [fundamental,f(j)];
+        else
+            ratio = f(j)./fundamental;
+            inrange = (ratio<(round(ratio)*1.05)) + (ratio>(round(ratio)*0.95));    % 近似整数倍
+            if all(inrange~=2)
+                fundamental = [fundamental,f(j)];
+            end
+        end
+    end
+
+    end
+    ```
+
+    将上述过程整合为`m`文件:
+
+    ```matlab
+    %% Detect frequency
+    Pth1 = 1e-4;     % 1st threshold of power
+    Pth2 = 1e-5;     % 2nd threshold of power
+
+    funds = cell(size(sortf,2),1);  % to save fundamental results
+
+    for i = 1:size(sortf,2)
+        fundamental = [];
+        col = sortP(:,i);
+        f = sortf((col>Pth1),i);
+        if isempty(f)
+            f = sortf((col>Pth2));
+            if isempty(f)
+                f = [];
+            end
+        end
+       
+        fundamental = ffilter(f);   % detect fundamental component
+        % fundamental may equals [1312,656], as f is power-sorted
+        % so we must sort fundamental and ffilter again
+        fundamental = ffilter(sort(fundamental,'ascend'));
+        
+        funds{i} = fundamental;
+    end
+    ```
+
+    **则funds{i}中保存了T(i)时刻可能的基频分量**
+
+    结果片段:
+
+    ![结果片段](pic/funds.png)
+
+3. **将基频对应到相应的音**
+
+    不妨以f<sub>A<sub>0</sub></sub>=220Hz为基准, 则其他音的频率由f=220*2<sup>n/12</sup>导出, 求出`n`便可推断出音名, 而`n = round(12*log2(f/220))`
+
+    ```matlab
+    %% Map to note
+    ns = cell(length(T),1);
+
+    for i = 1:length(T)
+        ns{i} = round(12*log2(funds{i}/220));
+    end
+    ```
+
+    转换结果片段: 
+
+    ![转换结果片段](pic/ns.png)
+
+4. **去除噪音以及非线性谐波**
+
+    注意到时间向量的间隔`T(2)-T(1)=0.006`, 假设人耳的分辨率为0.1s, 那么稳定的音应当持续`0.1/0.006=17`个时间间隔以上, 按此条件滤除时间较短的噪音:
+
+    ```matlab
+    %% Resolution
+    resolution = 0.1;
+    combo = round(resolution/(T(2)-T(1)));
+    for i = 2:length(T)-combo
+        if ~isequal(ns{i},ns{i-1}) && ~isequal(ns{i},ns{i+combo})
+            ns{i} = ns{i-1};
+        end
+    end
+    ```
+
+5. **解析每个音的时值**
+
+    ```matlab
+    %% Calculate time
+    nt = cell(1,2);
+    nt{1,1} = ns{1}; nt{1,2} = T(1);
+
+    for i = 2:length(T)
+        if isequal(ns{i},nt{end,1}) || isequal(ns{i},[])
+            nt{end,2} = T(i);
+        else
+            nt = [nt;cell(1,2)];
+            nt{end,1} = ns{i}; nt{end,2} = T(i);
+        end
+    end
+
+    for i = 1:size(nt,1)-1
+        nt{end-i+1,2} = nt{end-i+1,2} - nt{end-i,2};
+    end
+    ```
+
+    得到结果为
+
+    ```matlab
+    nt
+
+    nt = 
+
+        [         0]    [0.2420]
+        [1x2 double]    [0.3960]
+        [         0]    [1.1040]
+        [         2]    [0.6060]
+        [1x3 double]    [0.8520]
+        [         7]    [0.5040]
+        [1x2 double]    [0.4260]
+        [1x2 double]    [0.4200]
+        [        -4]    [0.8040]
+        [         0]    [0.6660]
+        [         2]    [0.3180]
+        [         0]    [0.6660]
+        [        19]    [0.2760]
+        [         0]    [1.0020]
+        [1x2 double]    [0.3840]
+        [         0]    [0.3180]
+        [        12]    [0.4560]
+        [         0]    [0.4380]
+        [1x2 double]    [0.4560]
+        [        19]    [0.4980]
+        [1x3 double]    [0.4560]
+        [         2]    [0.4380]
+        [1x2 double]    [0.3960]
+        [         5]    [0.1920]
+        [         3]    [0.4080]
+        [1x2 double]    [0.3540]
+        [        -4]    [0.1560]
+        [1x2 double]    [0.2460]
+        [         0]    [0.2820]
+        [1x2 double]    [0.3060]
+        [1x2 double]    [0.0780]
+        [         0]    [0.7620]
+        [        -1]    [0.3660]
+        [         0]    [0.9840]
+    ```
+
+    其中第二列为每个音的长度, 第一列为基频
 
 
 

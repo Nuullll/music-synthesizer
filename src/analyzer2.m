@@ -17,33 +17,84 @@ sortf = F(I);   % column j of sortf is descend-sorted frequency at time T(j)
 %% Detect frequency
 Pth1 = 1e-4;     % 1st threshold of power
 Pth2 = 1e-5;     % 2nd threshold of power
-Pth3 = 5e-6;     % 3rd threshold of power
 
 funds = cell(size(sortf,2),1);  % to save fundamental results
 
 for i = 1:size(sortf,2)
     fundamental = [];
     col = sortP(:,i);
-    f = sortf((col>Pth1),i);
+    if max(col)>Pth2
+        f = sortf(1:5,i);
+    else
+        f = [];
+    end
     if isempty(f)
         f = sortf((col>Pth2));
         if isempty(f)
-            f = sortf((col>Pth3));
+            f = [];
         end
     end
    
-    for j = 1:length(f)
-        if isempty(fundamental)
-            fundamental = [fundamental,f(j)];
-        else
-            ratio = f(j)./fundamental;
-            inrange = (ratio<(round(ratio)*1.05)) + (ratio>(round(ratio)*0.95));
-            if all(inrange~=2)
-                fundamental = [fundamental,f(j)];
-            end
-        end
-    end
+    fundamental = ffilter(f);   % detect fundamental component
+    % fundamental may equals [1312,656], as f is power-sorted
+    % so we must sort fundamental and ffilter again
+    fundamental = ffilter(sort(fundamental,'ascend'));
+    
     funds{i} = fundamental;
 end
 
+%% Map to note
+ns = cell(length(T),1);
 
+for i = 1:length(T)
+    ns{i} = round(12*log2(funds{i}/220));
+end
+
+%% Resolution
+resolution = 0.15;
+combo = round(resolution/(T(2)-T(1)));
+for i = 2:length(T)-combo
+    if ~isequal(ns{i},ns{i-1}) && ~isequal(ns{i},ns{i+combo})
+        ns{i} = ns{i-1};
+    end
+end
+% for i = length(T)-combo+1:length(T)
+%     ns{i} = ns{length(T)-combo+1};
+% end
+
+%% Calculate time
+nt = cell(1,2);
+nt{1,1} = ns{1}; nt{1,2} = T(1);
+
+for i = 2:length(T)
+    if isequal(ns{i},nt{end,1}) || isequal(ns{i},[])
+        nt{end,2} = T(i);
+    else
+        nt = [nt;cell(1,2)];
+        nt{end,1} = ns{i}; nt{end,2} = T(i);
+    end
+end
+
+for i = 1:size(nt,1)-1
+    nt{end-i+1,2} = nt{end-i+1,2} - nt{end-i,2};
+end
+
+
+%% test
+wav = [];
+for i = 1:size(nt,1)
+    t = 0:1/fs:nt{i,2};
+    w = zeros(1,length(t));
+    for j = 1:length(nt{i,1})
+        if nt{i,1}(j) > 12
+            n = nt{i,1}(j) - 12;
+        else
+            n = nt{i,1}(j);
+        end
+        f = 220*2^(n/12);
+        w = w + adsr(0.14,0.26,0.45,0.26,sin(2*pi*f*t)+0.3*sin(4*pi*f*t),t);
+    end
+    wav = [wav,w];
+end
+wav = wav/max(wav);
+sound(wav,fs);
